@@ -10,7 +10,6 @@ import org.bson.Document;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractMongoRegistry<T extends Model> implements Registry<T> {
