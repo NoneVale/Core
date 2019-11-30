@@ -1,0 +1,7 @@
+name: Core
+version: 1.0.0-SNAPSHOT
+main: net.nighthawkempires.core.CorePlugin
+description: Nighthawk Empires' Core Plugin.
+author: NoneVale_
+api-version: 1.14
+
