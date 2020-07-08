@@ -7,6 +7,7 @@ import net.nighthawkempires.core.scoreboard.ScoreboardManager;
 import net.nighthawkempires.core.settings.ConfigModel;
 import net.nighthawkempires.core.settings.SettingsModel;
 import net.nighthawkempires.core.user.UserModel;
+import net.nighthawkempires.core.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -18,6 +19,11 @@ import org.bukkit.scoreboard.Team;
 public class InfoScoreboard extends NEScoreboard {
 
     private int taskId;
+
+    @Override
+    public int getPriority() {
+        return 1;
+    }
 
     @Override
     public String getName() {
@@ -59,7 +65,7 @@ public class InfoScoreboard extends NEScoreboard {
         objective.getScore(ChatColor.GRAY + "" + ChatColor.BOLD + (getConfig().isEconomyBased() ? " Balance" : " Played Servers") + ChatColor.GRAY + ": ")
                 .setScore(6);
         objective.getScore(ChatColor.GRAY + " ➛  " + ChatColor.GREEN + "" + ChatColor.BOLD).setScore(5);
-        middle.setSuffix(getConfig().isEconomyBased() ? userModel.getServerBalance(getConfig().getServerType()) + "" : userModel.getPlayedServerList().size() + "");
+        middle.setSuffix(getConfig().isEconomyBased() ? StringUtil.formatBalance(userModel.getServerBalance(getConfig().getServerType())) + "" : userModel.getPlayedServerList().size() + "");
         objective.getScore(ChatColor.YELLOW + "  ").setScore(4);
         objective.getScore(ChatColor.GRAY + "" + ChatColor.BOLD + " Tokens" + ChatColor.GRAY + ": ").setScore(3);
         objective.getScore(ChatColor.GRAY + " ➛  " + ChatColor.GOLD + "" + ChatColor.BOLD).setScore(2);
@@ -69,7 +75,7 @@ public class InfoScoreboard extends NEScoreboard {
 
         this.taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(CorePlugin.getPlugin(), () -> {
             top.setSuffix(player.getName());
-            middle.setSuffix(getConfig().isEconomyBased() ? userModel.getServerBalance(getConfig().getServerType()) + "" : userModel.getPlayedServerList().size() + "");
+            middle.setSuffix(getConfig().isEconomyBased() ? StringUtil.formatBalance(userModel.getServerBalance(getConfig().getServerType())) + "" : userModel.getPlayedServerList().size() + "");
             bottom.setSuffix(userModel.getTokens() + "");
         }, 0 , 5);
         Bukkit.getScheduler().scheduleSyncDelayedTask(CorePlugin.getPlugin(), () -> {

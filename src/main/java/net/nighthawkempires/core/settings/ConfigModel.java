@@ -1,10 +1,13 @@
 package net.nighthawkempires.core.settings;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.nighthawkempires.core.CorePlugin;
 import net.nighthawkempires.core.datasection.DataSection;
 import net.nighthawkempires.core.server.ServerType;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -30,6 +33,8 @@ public class ConfigModel extends SettingsModel {
     private double defaultBalance;
     private int defaultTokens;
 
+    private Map<String, Integer> warmupCommands;
+
     public ConfigModel() {
         this.key = "config";
 
@@ -46,6 +51,8 @@ public class ConfigModel extends SettingsModel {
 
         this.defaultBalance = 500.0;
         this.defaultTokens = 15;
+
+        warmupCommands = Maps.newHashMap();
 
         CorePlugin.getSettingsRegistry().register(this);
     }
@@ -72,6 +79,14 @@ public class ConfigModel extends SettingsModel {
         DataSection defaultData = data.getSectionNullable("defaults");
         this.defaultBalance = defaultData.getDouble("balance");
         this.defaultTokens = defaultData.getInt("tokens");
+
+        this.warmupCommands = Maps.newHashMap();
+        if (data.isSet("command-warmups")) {
+            DataSection commandData = data.getSectionNullable("command-warmups");
+            for (String s : commandData.keySet()) {
+                this.warmupCommands.put(s, commandData.getInt(s));
+            }
+        }
 
         CorePlugin.getSettingsRegistry().register(this);
     }
@@ -116,6 +131,15 @@ public class ConfigModel extends SettingsModel {
         return defaultTokens;
     }
 
+    public ImmutableList<String> getWarmupCommands() {
+        return ImmutableList.copyOf(this.warmupCommands.keySet());
+    }
+
+    public int getRequiredArgLength(String command) {
+        if (this.warmupCommands.containsKey(command)) return this.warmupCommands.get(command);
+        return 0;
+    }
+
     @Override
     public String getKey() {
         return key;
@@ -144,6 +168,8 @@ public class ConfigModel extends SettingsModel {
         defaultMap.put("balance", this.defaultBalance);
         defaultMap.put("tokens", this.defaultTokens);
         map.put("defaults", defaultMap);
+
+        map.put("command-warmups", this.warmupCommands);
 
         return map;
     }

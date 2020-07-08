@@ -15,4 +15,8 @@ public abstract class NEScoreboard {
     public Scoreboard getScoreboard() {
         return Bukkit.getScoreboardManager().getNewScoreboard();
     }
+
+    public int getPriority() {
+        return 999;
+    }
 }

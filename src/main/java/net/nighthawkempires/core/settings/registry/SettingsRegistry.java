@@ -2,10 +2,7 @@ package net.nighthawkempires.core.settings.registry;
 
 import net.nighthawkempires.core.datasection.DataSection;
 import net.nighthawkempires.core.datasection.Registry;
-import net.nighthawkempires.core.settings.AnnouncementsModel;
-import net.nighthawkempires.core.settings.ConfigModel;
-import net.nighthawkempires.core.settings.MessagesModel;
-import net.nighthawkempires.core.settings.SettingsModel;
+import net.nighthawkempires.core.settings.*;
 
 import java.util.Map;
 
@@ -18,7 +15,10 @@ public interface SettingsRegistry extends Registry<SettingsModel> {
             return new MessagesModel(key, data);
         else if (key.equalsIgnoreCase("announcements"))
             return new AnnouncementsModel(key, data);
-
+        else if (key.equalsIgnoreCase("materials"))
+            return new MaterialsModel(key, data);
+        else if (key.equals("cooldowns"))
+            return new CooldownModel(data);
         return null; //new SettingsModel(stringKey, data);
     }
 
@@ -32,6 +32,14 @@ public interface SettingsRegistry extends Registry<SettingsModel> {
 
     default AnnouncementsModel getAnnouncements() {
         return (AnnouncementsModel) fromKey("announcements").orElseGet(() -> register(new AnnouncementsModel()));
+    }
+
+    default MaterialsModel getMaterials() {
+        return (MaterialsModel) fromKey("materials").orElseGet(() -> register(new MaterialsModel()));
+    }
+
+    default CooldownModel getCooldowns() {
+        return (CooldownModel) fromKey("cooldowns").orElseGet(() -> register(new CooldownModel()));
     }
 
     @Deprecated

@@ -16,12 +16,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
+import static net.nighthawkempires.core.CorePlugin.*;
+import static net.nighthawkempires.core.lang.Messages.*;
+import static org.bukkit.ChatColor.*;
+
 public class PlayerListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        UserModel userModel = CorePlugin.getUserRegistry().getUser(player.getUniqueId());
+        UserModel userModel = getUserRegistry().getUser(player.getUniqueId());
         userModel.setLastJoinDate(new SimpleDateFormat("MM/dd/yyyy hh:mm:ss").format(new Date()));
         String address = player.getAddress().getHostString();
         if (!userModel.getIpAddressList().contains(address)) {
@@ -38,29 +42,40 @@ public class PlayerListener implements Listener {
             }
         }
 
-        event.setJoinMessage(CorePlugin.getMessages().getMessage(Messages.JOIN_MESSAGE).replaceAll("%PLAYER%", player.getName()));
+        if (!userModel.getDisplayName().isEmpty())
+            player.setDisplayName(userModel.getDisplayName());
 
-        CorePlugin.getScoreboardManager().startScoreboards(player);
+
+        String header = "" +
+                getMessages().getMessage(CHAT_HEADER) + "\n\n" +
+                DARK_GRAY + "Players Online" + GRAY + ": " + GOLD + Bukkit.getServer().getOnlinePlayers().size() + DARK_GRAY + "/" + GOLD + Bukkit.getServer().getMaxPlayers() + "\n" +
+                RED + "\n    ";
+        player.setPlayerListHeader(header);
+        player.setPlayerListFooter(getMessages().getMessage(CHAT_FOOTER));
+
+        event.setJoinMessage(getMessages().getMessage(JOIN_MESSAGE).replaceAll("%PLAYER%", player.getName()));
+
+        //getScoreboardManager().startScoreboards(player);
     }
 
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        UserModel userModel = CorePlugin.getUserRegistry().getUser(player.getUniqueId());
+        UserModel userModel = getUserRegistry().getUser(player.getUniqueId());
         userModel.setLastLeaveDate(new SimpleDateFormat("MM/dd/yyyy hh:mm:ss").format(new Date()));
 
         //.event.setQuitMessage(ChatColor.DARK_GRAY + "[" + ChatColor.DARK_RED + "-" + ChatColor.DARK_GRAY + "] "
         //        + ChatColor.RED + player.getName() + ChatColor.GRAY + " has left the game.");
 
-        CorePlugin.getScoreboardManager().stopScoreboards(player);
-        event.setQuitMessage(CorePlugin.getMessages().getMessage(Messages.QUIT_MESSAGE).replaceAll("%PLAYER%", player.getName()));
+        //getScoreboardManager().stopScoreboards(player);
+        event.setQuitMessage(getMessages().getMessage(QUIT_MESSAGE).replaceAll("%PLAYER%", player.getName()));
 
     }
 
     @EventHandler
     public void onJoin(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
-        UserModel userModel = CorePlugin.getUserRegistry().getUser(uuid);
+        UserModel userModel = getUserRegistry().getUser(uuid);
 
         if (userModel.isBanned()) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
@@ -75,6 +90,6 @@ public class PlayerListener implements Listener {
     }
 
     private ConfigModel getConfig() {
-        return CorePlugin.getConfigg();
+        return getConfigg();
     }
 }

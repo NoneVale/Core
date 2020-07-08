@@ -1,5 +1,6 @@
 package net.nighthawkempires.core.user.registry;
 
+import com.google.common.collect.ImmutableList;
 import net.nighthawkempires.core.datasection.DataSection;
 import net.nighthawkempires.core.datasection.Registry;
 import net.nighthawkempires.core.user.UserModel;
@@ -23,6 +24,10 @@ public interface UserRegistry extends Registry<UserModel> {
 
     @Deprecated
     Map<String, UserModel> getRegisteredData();
+
+    default ImmutableList<UserModel> getUsers() {
+        return ImmutableList.copyOf(loadAllFromDb().values());
+    }
 
     default boolean userExists(UUID uuid) {
         return fromKey(uuid.toString()).isPresent();

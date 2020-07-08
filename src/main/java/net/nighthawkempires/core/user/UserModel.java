@@ -8,6 +8,7 @@ import net.nighthawkempires.core.CorePlugin;
 import net.nighthawkempires.core.bans.Ban;
 import net.nighthawkempires.core.datasection.DataSection;
 import net.nighthawkempires.core.datasection.Model;
+import net.nighthawkempires.core.kick.Kick;
 import net.nighthawkempires.core.mute.Mute;
 import net.nighthawkempires.core.server.ServerType;
 import net.nighthawkempires.core.warning.Warning;
@@ -32,6 +33,7 @@ public class UserModel implements Model {
     private String userName;
 
     private List<Ban> bans;
+    private List<Kick> kicks;
     private List<Mute> mutes;
     private List<Warning> warnings;
 
@@ -59,6 +61,7 @@ public class UserModel implements Model {
         this.userName = Bukkit.getOfflinePlayer(this.uuid).getName();
 
         this.bans = Lists.newArrayList();
+        this.kicks = Lists.newArrayList();
         this.mutes = Lists.newArrayList();
         this.warnings = Lists.newArrayList();
     }
@@ -89,18 +92,31 @@ public class UserModel implements Model {
         this.userName = Bukkit.getOfflinePlayer(this.uuid).getName();
 
         this.bans = Lists.newArrayList();
-        for (Map<String, Object> m : data.getMapList("bans")) {
-            this.bans.add(new Ban(m));
+        if (data.isSet("bans")) {
+            for (Map<String, Object> m : data.getMapList("bans")) {
+                this.bans.add(new Ban(m));
+            }
+        }
+
+        this.kicks = Lists.newArrayList();
+        if (data.isSet("kicks")) {
+            for (Map<String, Object> m : data.getMapList("kicks")) {
+                this.kicks.add(new Kick(m));
+            }
         }
 
         this.mutes = Lists.newArrayList();
-        for (Map<String, Object> m : data.getMapList("mutes")) {
-            this.mutes.add(new Mute(m));
+        if (data.isSet("mutes")) {
+            for (Map<String, Object> m : data.getMapList("mutes")) {
+                this.mutes.add(new Mute(m));
+            }
         }
 
         this.warnings = Lists.newArrayList();
-        for (Map<String, Object> m : data.getMapList("warnings")) {
-            this.warnings.add(new Warning(m));
+        if (data.isSet("warnings")) {
+            for (Map<String, Object> m : data.getMapList("warnings")) {
+                this.warnings.add(new Warning(m));
+            }
         }
     }
 
@@ -149,6 +165,10 @@ public class UserModel implements Model {
         if (!this.serverBalances.containsKey(serverType.name())) return -1;
 
         return this.serverBalances.get(serverType.name());
+    }
+
+    public double getCurrentServerBalance() {
+        return getServerBalance(CorePlugin.getConfigg().getServerType());
     }
 
     public void setServerBalance(ServerType serverType, double balance) {
@@ -234,14 +254,32 @@ public class UserModel implements Model {
         for (Ban b : getBans()) {
             if (b.isBanActive()) b.setBanActive(false);
         }
+        CorePlugin.getUserRegistry().register(this);
     }
 
     public void ban(Ban ban) {
         this.bans.add(ban);
+        CorePlugin.getUserRegistry().register(this);
     }
 
     public void ban(Map<String, Object> banMap) {
         ban(new Ban(banMap));
+    }
+
+    public ImmutableList<Kick> getKicks() {
+        return ImmutableList.copyOf(this.kicks);
+    }
+
+    public void clearKicks() {
+        this.kicks.clear();
+    }
+
+    public void kick(Kick kick) {
+        this.kicks.add(kick);
+    }
+
+    public void kick(Map<String, Object> kickMap) {
+        kick(new Kick(kickMap));
     }
 
     public ImmutableList<Mute> getMutes() {
@@ -267,10 +305,12 @@ public class UserModel implements Model {
         for (Mute m : getMutes()) {
             if (m.isMuteActive()) m.setMuteActive(false);
         }
+        CorePlugin.getUserRegistry().register(this);
     }
 
     public void mute(Mute mute) {
         this.mutes.add(mute);
+        CorePlugin.getUserRegistry().register(this);
     }
 
     public void mute(Map<String, Object> muteMap) {
@@ -319,6 +359,12 @@ public class UserModel implements Model {
             bans.add(b.serialize());
         }
         map.put("bans", bans);
+
+        List<Map<String, Object>> kicks = Lists.newArrayList();
+        for (Kick k : this.kicks) {
+            kicks.add(k.serialize());
+        }
+        map.put("kicks", kicks);
 
         List<Map<String, Object>> mutes = Lists.newArrayList();
         for (Mute m : this.mutes) {

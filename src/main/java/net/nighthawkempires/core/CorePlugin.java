@@ -6,18 +6,23 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 import net.nighthawkempires.core.announcements.AnnouncementsManager;
+import net.nighthawkempires.core.bossbar.BossBarManager;
 import net.nighthawkempires.core.chat.format.ChatFormat;
 import net.nighthawkempires.core.chat.tag.NameTag;
+import net.nighthawkempires.core.command.CommandManager;
+import net.nighthawkempires.core.enchantment.EnchantmentManager;
 import net.nighthawkempires.core.lang.Messages;
 import net.nighthawkempires.core.lang.MessagesManager;
 import net.nighthawkempires.core.listener.ChatListener;
 import net.nighthawkempires.core.listener.PlayerListener;
+import net.nighthawkempires.core.location.player.registry.FPlayerLocationRegistry;
+import net.nighthawkempires.core.location.player.registry.PlayerLocationRegistry;
+import net.nighthawkempires.core.location.registry.FPublicLocationRegistry;
+import net.nighthawkempires.core.location.registry.PublicLocationRegistry;
 import net.nighthawkempires.core.scoreboard.ScoreboardManager;
 import net.nighthawkempires.core.scoreboard.scoreboards.InfoScoreboard;
 import net.nighthawkempires.core.server.ServerType;
-import net.nighthawkempires.core.settings.AnnouncementsModel;
-import net.nighthawkempires.core.settings.ConfigModel;
-import net.nighthawkempires.core.settings.MessagesModel;
+import net.nighthawkempires.core.settings.*;
 import net.nighthawkempires.core.settings.registry.FSettingsRegistry;
 import net.nighthawkempires.core.settings.registry.SettingsRegistry;
 import net.nighthawkempires.core.user.registry.MUserRegistry;
@@ -31,12 +36,17 @@ public class CorePlugin extends JavaPlugin {
 
     private static Plugin plugin;
 
+    private static PlayerLocationRegistry playerLocationRegistry;
+    private static PublicLocationRegistry publicLocationRegistry;
     private static SettingsRegistry settingsRegistry;
     private static UserRegistry userRegistry;
 
     private static MongoDatabase mongoDatabase;
 
     private static AnnouncementsManager announcementsManager;
+    private static BossBarManager bossBarManager;
+    private static CommandManager commandManager;
+    private static EnchantmentManager enchantmentManager;
     private static MessagesManager messagesManager;
     private static ScoreboardManager scoreboardManager;
 
@@ -79,6 +89,10 @@ public class CorePlugin extends JavaPlugin {
                 registerListeners();
 
                 announcementsManager = new AnnouncementsManager();
+                bossBarManager = new BossBarManager();
+                commandManager = new CommandManager();
+
+                enchantmentManager = new EnchantmentManager();
 
                 messagesManager = new MessagesManager();
                 getMessagesManager().addEnumClass(Messages.class);
@@ -88,6 +102,9 @@ public class CorePlugin extends JavaPlugin {
 
                 chatFormat = new ChatFormat();
                 getChatFormat().add(new NameTag());
+
+                playerLocationRegistry = new FPlayerLocationRegistry();
+                publicLocationRegistry = new FPublicLocationRegistry();
             } catch (Exception exception) {
                 exception.printStackTrace();
                 getLogger().warning("Could not connect to MongoDB, shutting down...");
@@ -101,7 +118,7 @@ public class CorePlugin extends JavaPlugin {
     }
 
     public void onDisable() {
-
+        getEnchantmentManager().unregisterEnchants();
     }
 
     public void registerListeners() {
@@ -111,6 +128,14 @@ public class CorePlugin extends JavaPlugin {
 
     public static Plugin getPlugin() {
         return plugin;
+    }
+
+    public static PlayerLocationRegistry getPlayerLocationRegistry() {
+        return playerLocationRegistry;
+    }
+
+    public static PublicLocationRegistry getPublicLocationRegistry() {
+        return publicLocationRegistry;
     }
 
     public static SettingsRegistry getSettingsRegistry() {
@@ -129,6 +154,14 @@ public class CorePlugin extends JavaPlugin {
         return getSettingsRegistry().getAnnouncements();
     }
 
+    public static MaterialsModel getMaterials() {
+        return getSettingsRegistry().getMaterials();
+    }
+
+    public static CooldownModel getCooldowns() {
+        return getSettingsRegistry().getCooldowns();
+    }
+
     public static UserRegistry getUserRegistry() {
         return userRegistry;
     }
@@ -137,8 +170,20 @@ public class CorePlugin extends JavaPlugin {
         return mongoDatabase;
     }
 
+    public static BossBarManager getBossBarManager() {
+        return bossBarManager;
+    }
+
+    public static CommandManager getCommandManager() {
+        return commandManager;
+    }
+
     public static AnnouncementsManager getAnnouncementsManager() {
         return announcementsManager;
+    }
+
+    public static EnchantmentManager getEnchantmentManager() {
+        return enchantmentManager;
     }
 
     public static MessagesManager getMessagesManager() {

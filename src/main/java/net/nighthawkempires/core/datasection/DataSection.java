@@ -144,6 +144,10 @@ public interface DataSection extends Map<String, Object> {
         return containsKey(p_String) ? getMapList(p_String) : null;
     }
 
+    default Map<String, Object> getMap(String p_String) {
+        return (Map) get(p_String);
+    }
+
     default HashMap<String, Object> getHashMap(String p_String) {
         return (HashMap<String, Object>) get(p_String);
     }

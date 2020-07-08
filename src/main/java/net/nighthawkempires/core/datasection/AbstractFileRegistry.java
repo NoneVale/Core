@@ -177,6 +177,9 @@ public abstract class AbstractFileRegistry<T extends Model> implements Registry<
     public void loadFromDb(String key) {
         Gson gson = new GsonBuilder().create();
         try {
+            if (!FOLDER.exists())
+                FOLDER.mkdirs();
+
             File file = new File((FOLDER == null ? "" : FOLDER.getPath() + "/") + key + (!BSON ? ".json" : ".bson"));
             synchronized (file) {
                 if (file.exists()) {
@@ -202,6 +205,7 @@ public abstract class AbstractFileRegistry<T extends Model> implements Registry<
 
     @SuppressWarnings("ConstantConditions")
     public ConcurrentMap<String, T> loadAllFromDb() {
+        FOLDER.mkdirs();
         for (File file : FOLDER.listFiles()) {
             if (file.isFile() && (file.getName().endsWith(".json") || file.getName().endsWith(".bson"))) {
                 String key = file.getName().replace((!BSON ? ".json" : ".bson"), "");

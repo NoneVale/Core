@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 
+import javax.swing.plaf.SplitPaneUI;
 import java.util.*;
 
 public class ScoreboardManager {
@@ -19,8 +20,21 @@ public class ScoreboardManager {
         this.playerScoreboardMap = Maps.newHashMap();
     }
 
-    public void addScoreboard(NEScoreboard scoreboard) {
+    public ScoreboardManager addScoreboard(NEScoreboard scoreboard) {
         this.scoreboardList.add(scoreboard);
+        this.scoreboardList.sort(Comparator.comparing(NEScoreboard::getPriority));
+
+        return this;
+    }
+
+    public ScoreboardManager addAll(Collection<NEScoreboard> scoreboards) {
+        scoreboards.stream().forEach(this::addScoreboard);
+        return this;
+    }
+
+    public ScoreboardManager addAll(NEScoreboard... scoreboard) {
+        Arrays.asList(scoreboard).stream().forEach(this::addScoreboard);
+        return this;
     }
 
     @SuppressWarnings("unchecked")
@@ -66,10 +80,16 @@ public class ScoreboardManager {
 
             Bukkit.getScheduler().cancelTask(((List<NEScoreboard>) getPlayerMap(player).get("scoreboards")).get(currentBoard).getTaskId());
             Bukkit.getScheduler().cancelTask((int) getPlayerMap(player).get("taskId"));
+
+            this.playerScoreboardMap.remove(player.getUniqueId());
         } catch (Exception ignored) {}
     }
 
     private HashMap<String, Object> getPlayerMap(Player player) {
         return playerScoreboardMap.get(player.getUniqueId());
+    }
+
+    public HashMap<UUID, HashMap<String, Object>> getPlayerScoreboardMap() {
+        return playerScoreboardMap;
     }
 }
