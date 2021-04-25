@@ -35,7 +35,7 @@ public class Entities {
         RAVAGER(EntityType.RAVAGER), SHULKER(EntityType.SHULKER), SILVERFISH(EntityType.SILVERFISH), SKELETON(EntityType.SKELETON),
         SLIME(EntityType.SLIME), STRAY(EntityType.STRAY), VEX(EntityType.VEX), VINDICATOR(EntityType.VINDICATOR),
         WITCH(EntityType.WITCH), WITHER(EntityType.WITHER), WITHER_SKELETON(EntityType.WITHER_SKELETON), ZOMBIE(EntityType.ZOMBIE),
-        ZOMBIE_VILLAGER(EntityType.ZOMBIE_VILLAGER), PIG_ZOMBIE(EntityType.PIG_ZOMBIE)
+        ZOMBIE_VILLAGER(EntityType.ZOMBIE_VILLAGER), PIG_ZOMBIE(EntityType.ZOMBIFIED_PIGLIN)
         ;
 
         private EntityType entityType;

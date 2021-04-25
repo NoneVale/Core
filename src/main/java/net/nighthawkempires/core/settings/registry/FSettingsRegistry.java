@@ -12,6 +12,10 @@ public class FSettingsRegistry extends AbstractFileRegistry<SettingsModel> imple
         super("empires", SAVE_PRETTY, -1);
     }
 
+    public FSettingsRegistry(String path) {
+        super(path, SAVE_PRETTY, -1);
+    }
+
     @Override
     public Map<String, SettingsModel> getRegisteredData() {
         return REGISTERED_DATA.asMap();

@@ -6,6 +6,9 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 import net.nighthawkempires.core.announcements.AnnouncementsManager;
+import net.nighthawkempires.core.bans.registry.FIPBanRegistry;
+import net.nighthawkempires.core.bans.registry.IPBanRegistry;
+import net.nighthawkempires.core.bans.registry.MIPBanRegistry;
 import net.nighthawkempires.core.bossbar.BossBarManager;
 import net.nighthawkempires.core.chat.format.ChatFormat;
 import net.nighthawkempires.core.chat.tag.NameTag;
@@ -25,6 +28,7 @@ import net.nighthawkempires.core.server.ServerType;
 import net.nighthawkempires.core.settings.*;
 import net.nighthawkempires.core.settings.registry.FSettingsRegistry;
 import net.nighthawkempires.core.settings.registry.SettingsRegistry;
+import net.nighthawkempires.core.user.registry.FUserRegistry;
 import net.nighthawkempires.core.user.registry.MUserRegistry;
 import net.nighthawkempires.core.user.registry.UserRegistry;
 import org.bukkit.plugin.Plugin;
@@ -40,6 +44,7 @@ public class CorePlugin extends JavaPlugin {
     private static PublicLocationRegistry publicLocationRegistry;
     private static SettingsRegistry settingsRegistry;
     private static UserRegistry userRegistry;
+    private static IPBanRegistry ipBanRegistry;
 
     private static MongoDatabase mongoDatabase;
 
@@ -59,7 +64,7 @@ public class CorePlugin extends JavaPlugin {
     public void onEnable() {
         plugin = this;
 
-        settingsRegistry = new FSettingsRegistry();
+        settingsRegistry = new FSettingsRegistry("empires");
 
         if (!getSettingsRegistry().configExists()) {
             getLogger().info("Creating config file for the first time, please standby...");
@@ -72,19 +77,50 @@ public class CorePlugin extends JavaPlugin {
         if (getConfigg().getServerType() != ServerType.SETUP) {
             getLogger().info("Server Type has been registered as \'" + getConfigg().getServerType().name() + "\'");
             String pluginName = getPlugin().getName();
-            try {
-                String hostname = getConfigg().getMongoHostname();
-                String database = getConfigg().getMongoDatabase().replaceAll("%PLUGIN%", pluginName);
-                String username = getConfigg().getMongoUsername().replaceAll("%PLUGIN%", pluginName);
-                String password = getConfigg().getMongoPassword();
+            if (getConfigg().useMongo()) {
+                try {
+                    String hostname = getConfigg().getMongoHostname();
+                    String database = getConfigg().getMongoDatabase().replaceAll("%PLUGIN%", pluginName);
+                    String username = getConfigg().getMongoUsername().replaceAll("%PLUGIN%", pluginName);
+                    String password = getConfigg().getMongoPassword();
 
-                ServerAddress serverAddress = new ServerAddress(hostname, 27017);
-                MongoCredential mongoCredential = MongoCredential.createCredential(username, database, password.toCharArray());
-                mongoDatabase = new MongoClient(serverAddress, mongoCredential, new MongoClientOptions.Builder().build()).getDatabase(database);
+                    ServerAddress serverAddress = new ServerAddress(hostname, 27017);
+                    MongoCredential mongoCredential = MongoCredential.createCredential(username, database, password.toCharArray());
+                    mongoDatabase = new MongoClient(serverAddress, mongoCredential, new MongoClientOptions.Builder().build()).getDatabase(database);
 
-                userRegistry = new MUserRegistry(getMongoDatabase());
+                    userRegistry = new MUserRegistry(getMongoDatabase());
+                    ipBanRegistry = new MIPBanRegistry(getMongoDatabase());
 
-                getLogger().info("Successfully connected to MongoDB.");
+                    getLogger().info("Successfully connected to MongoDB.");
+
+                    registerListeners();
+
+                    announcementsManager = new AnnouncementsManager();
+                    bossBarManager = new BossBarManager();
+                    commandManager = new CommandManager();
+
+                    enchantmentManager = new EnchantmentManager();
+
+                    messagesManager = new MessagesManager();
+                    getMessagesManager().addEnumClass(Messages.class);
+
+                    scoreboardManager = new ScoreboardManager();
+                    getScoreboardManager().addScoreboard(new InfoScoreboard());
+
+                    chatFormat = new ChatFormat();
+                    getChatFormat().add(new NameTag());
+
+                    playerLocationRegistry = new FPlayerLocationRegistry();
+                    publicLocationRegistry = new FPublicLocationRegistry();
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                    getLogger().warning("Could not connect to MongoDB, shutting down...");
+                }
+            } else {
+                userRegistry = new FUserRegistry("empires");
+                ipBanRegistry = new FIPBanRegistry("empires");
+
+                getLogger().info("");
 
                 registerListeners();
 
@@ -105,10 +141,6 @@ public class CorePlugin extends JavaPlugin {
 
                 playerLocationRegistry = new FPlayerLocationRegistry();
                 publicLocationRegistry = new FPublicLocationRegistry();
-            } catch (Exception exception) {
-                exception.printStackTrace();
-                getLogger().warning("Could not connect to MongoDB, shutting down...");
-                getServer().shutdown();
             }
 
         } else {
@@ -164,6 +196,10 @@ public class CorePlugin extends JavaPlugin {
 
     public static UserRegistry getUserRegistry() {
         return userRegistry;
+    }
+
+    public static IPBanRegistry getIpBanRegistry() {
+        return ipBanRegistry;
     }
 
     public MongoDatabase getMongoDatabase() {

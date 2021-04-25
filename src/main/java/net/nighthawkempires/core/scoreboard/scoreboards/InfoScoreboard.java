@@ -44,39 +44,34 @@ public class InfoScoreboard extends NEScoreboard {
         objective.setDisplayName(CorePlugin.getMessages().getMessage(Messages.SCOREBOARD_HEADER).replaceAll("%SERVER%",
                 CorePlugin.getMessages().getServerTag(getConfig().getServerType())));
         Team top = scoreboard.registerNewTeam("top");
-        top.addEntry(ChatColor.GRAY + " ➛  " + ChatColor.BLUE + "" + ChatColor.BOLD);
+        top.addEntry(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + " ➛  " + ChatColor.BLUE);
         top.setPrefix("");
         top.setSuffix("");
         Team middle = scoreboard.registerNewTeam("middle");
-        middle.addEntry(ChatColor.GRAY + " ➛  " + ChatColor.GREEN + "" + ChatColor.BOLD);
+        middle.addEntry(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + " ➛  " + ChatColor.GREEN);
         middle.setPrefix("");
         middle.setSuffix("");
         Team bottom = scoreboard.registerNewTeam("bottom");
-        bottom.addEntry(ChatColor.GRAY + " ➛  " + ChatColor.GOLD + "" + ChatColor.BOLD);
+        bottom.addEntry(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + " ➛  " + ChatColor.GOLD);
         bottom.setPrefix("");
         bottom.setSuffix("");
 
-        objective.getScore(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "" + ChatColor.BOLD + "--------------")
-                .setScore(10);
-        objective.getScore(ChatColor.GRAY + "" + ChatColor.BOLD + " Name" + ChatColor.GRAY + ": ").setScore(9);
-        objective.getScore(ChatColor.GRAY + " ➛  " + ChatColor.BLUE + "" + ChatColor.BOLD).setScore(8);
-        top.setSuffix(player.getName());
+        objective.getScore(ChatColor.GRAY + " Name" + ChatColor.GRAY + ": ").setScore(9);
+        objective.getScore(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + " ➛  " + ChatColor.BLUE).setScore(8);
         objective.getScore(ChatColor.DARK_PURPLE + " ").setScore(7);
-        objective.getScore(ChatColor.GRAY + "" + ChatColor.BOLD + (getConfig().isEconomyBased() ? " Balance" : " Played Servers") + ChatColor.GRAY + ": ")
+        objective.getScore(ChatColor.GRAY + (getConfig().isEconomyBased() ? " Balance" : " Played Servers") + ChatColor.GRAY + ": ")
                 .setScore(6);
-        objective.getScore(ChatColor.GRAY + " ➛  " + ChatColor.GREEN + "" + ChatColor.BOLD).setScore(5);
-        middle.setSuffix(getConfig().isEconomyBased() ? StringUtil.formatBalance(userModel.getServerBalance(getConfig().getServerType())) + "" : userModel.getPlayedServerList().size() + "");
+        objective.getScore(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + " ➛  " + ChatColor.GREEN).setScore(5);
         objective.getScore(ChatColor.YELLOW + "  ").setScore(4);
-        objective.getScore(ChatColor.GRAY + "" + ChatColor.BOLD + " Tokens" + ChatColor.GRAY + ": ").setScore(3);
-        objective.getScore(ChatColor.GRAY + " ➛  " + ChatColor.GOLD + "" + ChatColor.BOLD).setScore(2);
-        bottom.setSuffix(userModel.getTokens() + "");
-        objective.getScore(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "" + ChatColor.BOLD + "--------------")
+        objective.getScore(ChatColor.GRAY + " Tokens" + ChatColor.GRAY + ": ").setScore(3);
+        objective.getScore(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + " ➛  " + ChatColor.GOLD).setScore(2);
+        objective.getScore(ChatColor.DARK_GRAY + "" + ChatColor.STRIKETHROUGH + "" + ChatColor.BOLD + "━━━━━━━━━━━━━━━━━━━━━━")
                 .setScore(1);
 
         this.taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(CorePlugin.getPlugin(), () -> {
-            top.setSuffix(player.getName());
-            middle.setSuffix(getConfig().isEconomyBased() ? StringUtil.formatBalance(userModel.getServerBalance(getConfig().getServerType())) + "" : userModel.getPlayedServerList().size() + "");
-            bottom.setSuffix(userModel.getTokens() + "");
+            top.setSuffix(ChatColor.BLUE + player.getName());
+            middle.setSuffix(ChatColor.GREEN + (getConfig().isEconomyBased() ? StringUtil.formatBalance(userModel.getServerBalance(getConfig().getServerType())) + "" : userModel.getPlayedServerList().size() + ""));
+            bottom.setSuffix(ChatColor.GOLD + "" + userModel.getTokens());
         }, 0 , 5);
         Bukkit.getScheduler().scheduleSyncDelayedTask(CorePlugin.getPlugin(), () -> {
             Bukkit.getScheduler().cancelTask(getTaskId());

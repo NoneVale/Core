@@ -39,7 +39,7 @@ public class ScoreboardManager {
 
     @SuppressWarnings("unchecked")
     public void startScoreboards(Player player) {
-        playerScoreboardMap.put(player.getUniqueId(), Maps.newHashMap());
+        this.playerScoreboardMap.put(player.getUniqueId(), Maps.newHashMap());
         getPlayerMap(player).put("scoreboards", Lists.newArrayList(scoreboardList));
         getPlayerMap(player).put("current-board", 0);
         int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(CorePlugin.getPlugin(), () -> {
@@ -90,6 +90,6 @@ public class ScoreboardManager {
     }
 
     public HashMap<UUID, HashMap<String, Object>> getPlayerScoreboardMap() {
-        return playerScoreboardMap;
+        return this.playerScoreboardMap;
     }
 }

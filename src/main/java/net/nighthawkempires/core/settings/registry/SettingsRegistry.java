@@ -17,6 +17,8 @@ public interface SettingsRegistry extends Registry<SettingsModel> {
             return new AnnouncementsModel(key, data);
         else if (key.equalsIgnoreCase("materials"))
             return new MaterialsModel(key, data);
+        else if (key.equalsIgnoreCase("enchantments"))
+            return new EnchantmentsModel(key, data);
         else if (key.equals("cooldowns"))
             return new CooldownModel(data);
         return null; //new SettingsModel(stringKey, data);
@@ -32,6 +34,10 @@ public interface SettingsRegistry extends Registry<SettingsModel> {
 
     default AnnouncementsModel getAnnouncements() {
         return (AnnouncementsModel) fromKey("announcements").orElseGet(() -> register(new AnnouncementsModel()));
+    }
+
+    default EnchantmentsModel getEnchantments() {
+        return (EnchantmentsModel) fromKey("enchantments").orElseGet(() -> register(new EnchantmentsModel()));
     }
 
     default MaterialsModel getMaterials() {

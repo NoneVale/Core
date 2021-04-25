@@ -14,6 +14,8 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ChatFormat {
 
@@ -68,6 +70,13 @@ public class ChatFormat {
         component.addExtra(next);
         String finalMessage = ChatColor.WHITE + message;
         if (player.hasPermission("ne.chat.color")) {
+            Matcher matcher = pattern.matcher(finalMessage);
+            while (matcher.find()) {
+                String match = finalMessage.substring(matcher.start(), matcher.end());
+                String color = match.substring(1);
+                finalMessage = finalMessage.replace(match, net.md_5.bungee.api.ChatColor.of(color) + "");
+                matcher = pattern.matcher(finalMessage);
+            }
             finalMessage = ChatColor.translateAlternateColorCodes('&', finalMessage);
         }
         for (BaseComponent components : TextComponent.fromLegacyText(finalMessage)) {
@@ -75,6 +84,8 @@ public class ChatFormat {
         }
         return component;
     }
+
+    private final Pattern pattern = Pattern.compile("&#[a-fA-F0-9]{6}");
 
     public BaseComponent getFormattedMessage(ConsoleCommandSender console, String message) {
         TextComponent component = new TextComponent("");
@@ -85,6 +96,13 @@ public class ChatFormat {
         component.addExtra(next);
         String finalMessage = ChatColor.WHITE + message;
         if (console.hasPermission("ne.chat.color")) {
+            Matcher matcher = pattern.matcher(finalMessage);
+            while (matcher.find()) {
+                String match = finalMessage.substring(matcher.start(), matcher.end());
+                String color = match.substring(1);
+                finalMessage = finalMessage.replace(match, net.md_5.bungee.api.ChatColor.of(color) + "");
+                matcher = pattern.matcher(finalMessage);
+            }
             finalMessage = ChatColor.translateAlternateColorCodes('&', finalMessage);
         }
         for (BaseComponent components : TextComponent.fromLegacyText(finalMessage)) {

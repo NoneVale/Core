@@ -1,6 +1,7 @@
 package net.nighthawkempires.core.util;
 
 import com.google.common.collect.Maps;
+import org.bukkit.ChatColor;
 
 import java.util.TreeMap;
 
@@ -78,5 +79,44 @@ public class StringUtil {
         if ((tenths == 0) || (whole >= 10))
             return String.format("%d%s", whole, sfx);
         return String.format("%d.%d%s", whole, tenths, sfx);
+    }
+
+
+    private final static int centrePixels = 154;
+
+    public static String centeredMessage(String message) {
+        message = ChatColor.translateAlternateColorCodes('&', message);
+        int messagePixelSize = 0;
+        boolean previousCode = false;
+        boolean isBold = false;
+
+        for (char c : message.toCharArray()) {
+            if (c == '§') {
+                previousCode = true;
+                continue;
+            } else if(previousCode == true) {
+                previousCode = false;
+                if (c == 'l' || c == 'L') {
+                    isBold = true;
+                    continue;
+                } else isBold = false;
+            } else {
+                DefaultFontInfo dFI = DefaultFontInfo.getDefaultFontInfo(c);
+                messagePixelSize += isBold ? dFI.getBoldLength() : dFI.getLength();
+                messagePixelSize++;
+            }
+        }
+
+        int halvedMessageSize = messagePixelSize / 2;
+        int toCompensate = centrePixels - halvedMessageSize;
+        int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
+        int compensated = 0;
+        StringBuilder sb = new StringBuilder();
+
+        while (compensated < toCompensate) {
+            sb.append(" ");
+            compensated += spaceLength;
+        }
+        return sb.toString() + message;
     }
 }

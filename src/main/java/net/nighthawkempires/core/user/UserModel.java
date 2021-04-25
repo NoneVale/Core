@@ -37,6 +37,8 @@ public class UserModel implements Model {
     private List<Mute> mutes;
     private List<Warning> warnings;
 
+    private boolean scoreboardEnabled;
+
     private UUID uuid;
 
     public UserModel(UUID uuid) {
@@ -64,6 +66,8 @@ public class UserModel implements Model {
         this.kicks = Lists.newArrayList();
         this.mutes = Lists.newArrayList();
         this.warnings = Lists.newArrayList();
+
+        this.scoreboardEnabled = true;
     }
 
     public UserModel(String key, DataSection data) {
@@ -118,6 +122,8 @@ public class UserModel implements Model {
                 this.warnings.add(new Warning(m));
             }
         }
+
+        this.scoreboardEnabled = data.getBoolean("scoreboard_enabled", true);
     }
 
     public int getTokens() {
@@ -333,6 +339,15 @@ public class UserModel implements Model {
         warn(new Warning(warningMap));
     }
 
+    public boolean isScoreboardEnabled() {
+        return this.scoreboardEnabled;
+    }
+
+    public void setScoreboardEnabled(boolean scoreboardEnabled) {
+        this.scoreboardEnabled = scoreboardEnabled;
+        CorePlugin.getUserRegistry().register(this);
+    }
+
     @Override
     public String getKey() {
         return uuid.toString();
@@ -377,6 +392,8 @@ public class UserModel implements Model {
             warnings.add(w.serialize());
         }
         map.put("warnings", warnings);
+
+        map.put("scoreboard_enabled", this.scoreboardEnabled);
 
         return map;
     }

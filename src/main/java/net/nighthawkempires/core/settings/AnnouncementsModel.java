@@ -38,9 +38,10 @@ public class AnnouncementsModel extends SettingsModel {
 
         List<String[]> announcements = Lists.newArrayList();
         this.announcements = Lists.newArrayList();
-        for (Object o : data.getList("announcements")) {
-            announcements.add((String[]) o);
-            this.announcements.add(new Announcement((String[]) o));
+        for (Map<String, Object> map : data.getMapList("announcements")) {
+            Announcement announcement = new Announcement(map);
+            announcements.add(announcement.getLines());
+            this.announcements.add(announcement);
         }
         this.announcementsList = announcements;
     }

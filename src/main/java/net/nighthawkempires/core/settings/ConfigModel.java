@@ -13,33 +13,37 @@ import java.util.UUID;
 
 public class ConfigModel extends SettingsModel {
 
-    private String key;
+    private final String key;
 
     // SERVER SETTINGS
-    private ServerType serverType;
-    private boolean economyBased;
+    private final ServerType serverType;
+    private final boolean economyBased;
+    private final boolean scoreboardEnabled;
 
     // CONSOLE STUFF //
-    private String consoleDisplayName;
-    private UUID consoleUuid;
+    private final String consoleDisplayName;
+    private final UUID consoleUuid;
 
     // MONGO INFORMATION //
-    private String mongoHostname;
-    private String mongoDatabase;
-    private String mongoUsername;
-    private String mongoPassword;
+    private final String mongoHostname;
+    private final String mongoDatabase;
+    private final String mongoUsername;
+    private final String mongoPassword;
+
+    private final boolean useMongo;
 
     // STARTING SETTINGS //
-    private double defaultBalance;
-    private int defaultTokens;
+    private final double defaultBalance;
+    private final int defaultTokens;
 
-    private Map<String, Integer> warmupCommands;
+    private final Map<String, Integer> warmupCommands;
 
     public ConfigModel() {
         this.key = "config";
 
         this.serverType = ServerType.SETUP;
         this.economyBased = false;
+        this.scoreboardEnabled = true;
 
         this.consoleDisplayName = "&8&l&o*&7&l&oHawkeye&8&l&o";
         this.consoleUuid = UUID.randomUUID();
@@ -48,6 +52,8 @@ public class ConfigModel extends SettingsModel {
         this.mongoDatabase = "database";
         this.mongoUsername = "u$ername";
         this.mongoPassword = "pa$$word";
+
+        this.useMongo = false;
 
         this.defaultBalance = 500.0;
         this.defaultTokens = 15;
@@ -61,10 +67,9 @@ public class ConfigModel extends SettingsModel {
         this.key = key;
 
         this.serverType = ServerType.valueOf(data.getString("server-type").toUpperCase());
-        if (data.isSet("economy-based"))
-            this.economyBased = data.getBoolean("economy-based");
-        else
-            this.economyBased = false;
+        this.economyBased = data.getBoolean("economy-based", false);
+
+        this.scoreboardEnabled = data.getBoolean("scoreboard-enabled", false);
 
         DataSection consoleData = data.getSectionNullable("console");
         this.consoleDisplayName = consoleData.getString("display-name");
@@ -75,6 +80,7 @@ public class ConfigModel extends SettingsModel {
         this.mongoDatabase = mongoData.getString("database");
         this.mongoUsername = mongoData.getString("username");
         this.mongoPassword = mongoData.getString("password");
+        this.useMongo = mongoData.getBoolean("enabled", false);
 
         DataSection defaultData = data.getSectionNullable("defaults");
         this.defaultBalance = defaultData.getDouble("balance");
@@ -99,6 +105,10 @@ public class ConfigModel extends SettingsModel {
         return economyBased;
     }
 
+    public boolean isScoreboardEnabled() {
+        return scoreboardEnabled;
+    }
+
     public String getConsoleDisplayName() {
         return consoleDisplayName;
     }
@@ -121,6 +131,10 @@ public class ConfigModel extends SettingsModel {
 
     public String getMongoPassword() {
         return mongoPassword;
+    }
+
+    public boolean useMongo() {
+        return useMongo;
     }
 
     public double getDefaultBalance() {
@@ -151,6 +165,7 @@ public class ConfigModel extends SettingsModel {
 
         map.put("server-type", this.serverType);
         map.put("economy-based", this.economyBased);
+        map.put("scoreboard-enabled", this.scoreboardEnabled);
 
         Map<String, Object> consoleMap = Maps.newHashMap();
         consoleMap.put("display-name", this.consoleDisplayName);
@@ -162,6 +177,7 @@ public class ConfigModel extends SettingsModel {
         mongoMap.put("database", this.mongoDatabase);
         mongoMap.put("username", this.mongoUsername);
         mongoMap.put("password", this.mongoPassword);
+        mongoMap.put("enabled", this.useMongo);
         map.put("mongo", mongoMap);
 
         Map<String, Object> defaultMap = Maps.newHashMap();
