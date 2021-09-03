@@ -19,27 +19,25 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.16.3-R0.1-SNAPSHOT</version>
+            <version>1.17-R0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.3-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <version>1.17-R0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
-            <version>1.16.3-R0.1-SNAPSHOT</version>
+            <version>1.17-R0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-            <groupId>com.destroystokyo.paper</groupId>
+            <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.16.3-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <version>1.17.1-R0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -79,29 +77,6 @@
                     <goals>assembly:assembly</goals>
                     <tagNameFormat>@{project.version}</tagNameFormat>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <artifactSet>
-                                <includes>
-                                    <include>org.mongodb:mongodb-driver</include>
-                                    <include>org.mongodb:bson</include>
-                                    <include>org.mongodb:mongodb-driver-core</include>
-                                    <include>org.apache.commons:commons-lang3</include>
-                                </includes>
-                            </artifactSet>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

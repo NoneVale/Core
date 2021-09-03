@@ -75,6 +75,8 @@ public class ItemUtil {
         } catch (IllegalArgumentException | NoSuchFieldException | SecurityException | IllegalAccessException error) {
             error.printStackTrace();
         }
+
+        headMeta.setDisplayName(name);
         head.setItemMeta(headMeta);
         return head;
     }
