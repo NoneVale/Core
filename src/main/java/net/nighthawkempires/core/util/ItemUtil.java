@@ -45,12 +45,11 @@ public class ItemUtil {
         return itemStack;
     }
 
-    public static ItemStack getPlayerHead(String name, String owner) {
+    public static ItemStack getPlayerHead(UUID uuid) {
         ItemStack itemStack = new ItemStack(PLAYER_HEAD);
 
         SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-        skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
-        skullMeta.setDisplayName(name);
+        skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
 
         itemStack.setItemMeta(skullMeta);
 
