@@ -10,6 +10,10 @@ public class RandomUtil {
         return rand.nextInt(100) + 1 <= percentage;
     }
 
+    public static boolean fiftyfifty() {
+        return rand.nextBoolean();
+    }
+
     public static int randomNumber(int max) {
         return rand.nextInt(max) + 1;
     }
@@ -17,4 +21,6 @@ public class RandomUtil {
     public static double randomDouble(double max, double min) {
         return min + (max - min) * rand.nextDouble();
     }
+
+
 }

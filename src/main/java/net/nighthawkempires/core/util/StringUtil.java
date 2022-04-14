@@ -1,9 +1,13 @@
 package net.nighthawkempires.core.util;
 
 import com.google.common.collect.Maps;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringUtil {
 
@@ -118,5 +122,35 @@ public class StringUtil {
             compensated += spaceLength;
         }
         return sb.toString() + message;
+    }
+
+    private static final Pattern pattern = Pattern.compile("&#[a-fA-F0-9]{6}");
+
+    public static boolean hasHexCode(String string) {
+        Matcher matcher = pattern.matcher(string);
+        return matcher.find();
+    }
+
+    public static String getHexCode(String string) {
+        Matcher matcher = pattern.matcher(string);
+        String hexCode = "";
+        if (matcher.find()) {
+            String match = string.substring(matcher.start(), matcher.end());
+            hexCode = match.substring(1);
+        }
+        return hexCode;
+    }
+
+    public static String colorify(String string) {
+        String toEdit = string;
+        Matcher matcher = pattern.matcher(toEdit);
+        while (matcher.find()) {
+            String match = toEdit.substring(matcher.start(), matcher.end());
+            String color = match.substring(1);
+            toEdit = toEdit.replace(match, net.md_5.bungee.api.ChatColor.of(color) + "");
+            matcher = pattern.matcher(toEdit);
+        }
+        toEdit = ChatColor.translateAlternateColorCodes('&', toEdit);
+        return toEdit;
     }
 }

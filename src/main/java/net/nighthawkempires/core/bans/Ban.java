@@ -116,7 +116,7 @@ public class Ban {
                                 "&r\n&8&l&oReason&7&l&o: " + this.banReason +
                                 "&r\n&8&l&oIssued&7&l&o: " + getBanIssuedDate() +
                                 (this.banType == BanType.TEMP ? "&r\n&8&l&oUntil&7&l&o: " + getBannedUntilDate() : "") +
-                                "&r\n&8&l&oRequest Unban&7&l&o: https://discord.gg/YevukF5");
+                                "&r\n&8&l&oRequest Unban&7&l&o: https://discord.gg/ZR3qZfHA");
     }
 
     public Map<String, Object> serialize() {

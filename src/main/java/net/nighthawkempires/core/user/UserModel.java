@@ -19,18 +19,20 @@ import java.util.*;
 
 public class UserModel implements Model {
 
-    private int tokens;
-
     private List<String> ipAddressList;
     private List<String> playedServersList;
 
     private HashMap<String, Double> serverBalances;
 
+    private String discordId;
     private String displayName;
     private String joinDate;
     private String lastJoinDate;
     private String lastLeaveDate;
     private String userName;
+
+    private int tokens;
+    private int voteCount;
 
     private List<Ban> bans;
     private List<Kick> kicks;
@@ -56,11 +58,14 @@ public class UserModel implements Model {
 
         this.serverBalances = Maps.newHashMap();
 
+        this.discordId = "";
         this.displayName = "";
         this.joinDate = "";
         this.lastJoinDate = "";
         this.lastLeaveDate = "";
         this.userName = Bukkit.getOfflinePlayer(this.uuid).getName();
+
+        this.voteCount = 0;
 
         this.bans = Lists.newArrayList();
         this.kicks = Lists.newArrayList();
@@ -89,11 +94,14 @@ public class UserModel implements Model {
             this.serverBalances.put(server, balanceSection.getDouble(server));
         }
 
+        this.discordId = data.getString("discord-id", "");
         this.displayName = data.getString("display-name");
         this.joinDate = data.getString("join-date");
         this.lastJoinDate = data.getString("last-join-date");
         this.lastLeaveDate = data.getString("last-leave-date");
-        this.userName = Bukkit.getOfflinePlayer(this.uuid).getName();
+        this.userName = data.getString("username");
+
+        this.voteCount = data.getInt("votes", 0);
 
         this.bans = Lists.newArrayList();
         if (data.isSet("bans")) {
@@ -145,6 +153,19 @@ public class UserModel implements Model {
         CorePlugin.getUserRegistry().register(this);
     }
 
+    public int getVoteCount() {
+        return this.voteCount;
+    }
+
+    public void addVoteCount(int voteCount) {
+        this.voteCount += voteCount;
+        CorePlugin.getUserRegistry().register(this);
+    }
+
+    public void setVoteCount(int voteCount) {
+        this.voteCount = voteCount;
+        CorePlugin.getUserRegistry().register(this);
+    }
     public ImmutableList<String> getIpAddressList() {
         return ImmutableList.copyOf(this.ipAddressList);
     }
@@ -189,6 +210,15 @@ public class UserModel implements Model {
 
     public void removeServerBalance(ServerType serverType, double balance) {
         this.serverBalances.put(serverType.name(), getServerBalance(serverType) - balance);
+        CorePlugin.getUserRegistry().register(this);
+    }
+
+    public String getDiscordId() {
+        return discordId;
+    }
+
+    public void setDiscordId(String discordId) {
+        this.discordId = discordId;
         CorePlugin.getUserRegistry().register(this);
     }
 
@@ -363,11 +393,13 @@ public class UserModel implements Model {
 
         map.put("server-balances", this.serverBalances);
 
+        map.put("discord-id", this.discordId);
         map.put("display-name", this.displayName);
         map.put("join-date", this.joinDate);
         map.put("last-join-date", this.lastJoinDate);
         map.put("last-leave-date", this.lastLeaveDate);
         map.put("username", this.userName);
+        map.put("votes", this.voteCount);
 
         List<Map<String, Object>> bans = Lists.newArrayList();
         for (Ban b : this.bans) {

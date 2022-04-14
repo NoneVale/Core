@@ -106,6 +106,7 @@ public class CorePlugin extends JavaPlugin {
 
                     scoreboardManager = new ScoreboardManager();
                     getScoreboardManager().addScoreboard(new InfoScoreboard());
+                    scoreboardManager.startScoreboards();
 
                     chatFormat = new ChatFormat();
                     getChatFormat().add(new NameTag());

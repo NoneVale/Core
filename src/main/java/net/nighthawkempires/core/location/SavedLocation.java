@@ -51,25 +51,30 @@ public class SavedLocation {
         return this;
     }
 
+    public World getWorld() {
+        return world;
+    }
+
     public Location toLocation() {
         return new Location(world, x, y, z, yaw, pitch);
     }
 
     public Map<String, Object> serialize() {
         Map<String, Object> map = Maps.newHashMap();
-        map.put("world", world.getUID().toString());
+        if (world != null) {
+            map.put("world", world.getUID().toString());
 
-        map.put("x", x);
-        map.put("y", y);
-        map.put("z", z);
+            map.put("x", x);
+            map.put("y", y);
+            map.put("z", z);
 
-        if (this.useYaw)
-            map.put("yaw", yaw);
-        if (this.usePitch)
-            map.put("pitch", pitch);
+            if (this.useYaw)
+                map.put("yaw", yaw);
+            if (this.usePitch)
+                map.put("pitch", pitch);
 
-        map.put("name", name);
-
+            map.put("name", name);
+        }
         return map;
     }
 

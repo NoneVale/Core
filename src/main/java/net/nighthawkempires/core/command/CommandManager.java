@@ -1,6 +1,7 @@
 package net.nighthawkempires.core.command;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.bukkit.command.Command;
 
@@ -18,7 +19,11 @@ public class CommandManager {
 
     public void registerCommand(String command, List<String> permissions) {
         if (getCommandPermissions().containsKey(command)) {
-            this.commandPermissions.get(command).addAll(permissions);
+            List<String> perms = Lists.newArrayList(this.commandPermissions.get(command));
+            perms.addAll(permissions);
+
+            this.commandPermissions.remove(command);
+            this.commandPermissions.put(command, perms);
         } else {
             this.commandPermissions.put(command, permissions);
         }

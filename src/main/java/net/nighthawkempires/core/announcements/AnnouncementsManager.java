@@ -1,8 +1,10 @@
 package net.nighthawkempires.core.announcements;
 
 import net.nighthawkempires.core.CorePlugin;
+import net.nighthawkempires.core.lang.Messages;
 import net.nighthawkempires.core.settings.AnnouncementsModel;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class AnnouncementsManager {
@@ -30,7 +32,11 @@ public class AnnouncementsManager {
                 Announcement announcement = getAnnouncementsModel().getAnnouncements().get(this.currentAnnouncement);
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
+                    player.sendMessage(CorePlugin.getMessages().getMessage(Messages.CHAT_HEADER));
+                    player.sendMessage("");
                     player.sendMessage(announcement.getLines());
+                    player.sendMessage("");
+                    player.sendMessage(CorePlugin.getMessages().getMessage(Messages.CHAT_HEADER));
                 }
 
             }, getAnnouncementsModel().getAnnouncementsInterval(), getAnnouncementsModel().getAnnouncementsInterval());

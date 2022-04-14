@@ -153,7 +153,7 @@ public abstract class AbstractFileRegistry<T extends Model> implements Registry<
                 createFile(file);
             }
             try {
-                Gson gson = PRETTY ? new GsonBuilder().setPrettyPrinting().create() : new GsonBuilder().create();
+                Gson gson = PRETTY ? new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create() : new GsonBuilder().disableHtmlEscaping().create();
                 String json = gson.toJson(REGISTERED_DATA.asMap().get(key).serialize());
                 if (BSON) {
                     //BSONObject object = new BSon
@@ -175,7 +175,7 @@ public abstract class AbstractFileRegistry<T extends Model> implements Registry<
 
     @SuppressWarnings("unchecked")
     public void loadFromDb(String key) {
-        Gson gson = new GsonBuilder().create();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         try {
             if (!FOLDER.exists())
                 FOLDER.mkdirs();

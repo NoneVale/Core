@@ -36,7 +36,7 @@ public class PlayerListener implements Listener {
         }
 
         if (!userModel.getPlayedServerList().contains(getConfig().getServerType().name())) {
-            broadcast("Welcome " + player.getName() + " to the " + getConfig().getServerType().name() + " server.");
+            broadcast(CorePlugin.getMessages().getChatMessage(GRAY + "Welcome " + GREEN + player.getName() + GRAY + " to the server!"));
 
             userModel.setJoinDate(new SimpleDateFormat("MM/dd/yyyy hh:mm:ss").format(new Date()));
             userModel.addPlayedServer(getConfig().getServerType());
@@ -55,26 +55,28 @@ public class PlayerListener implements Listener {
             player.setDisplayName(userModel.getDisplayName());
 
 
-        /*String header = "" +
-                getMessages().getMessage(CHAT_HEADER) + "\n\n" +
-                DARK_GRAY + "Players Online" + GRAY + ": " + GOLD + Bukkit.getServer().getOnlinePlayers().size() + DARK_GRAY + "/" + GOLD + Bukkit.getServer().getMaxPlayers() + "\n" +
-                RED + "\n    ";
-        player.setPlayerListHeader(header);
-        player.setPlayerListFooter(getMessages().getMessage(CHAT_FOOTER));*/
-
         if (player.hasPermission("ne.staff")) {
             event.setJoinMessage(DARK_GRAY + "[" + DARK_GREEN + "+" + DARK_GRAY + "] "
                     + AQUA + "" + BOLD + "" + ITALIC + "Staff " + GREEN + player.getName() + GRAY + " has joined the game.");
         } else {
-            event.setJoinMessage(ChatColor.DARK_GRAY + "[" + DARK_GREEN + "+" + DARK_GRAY + "] "
+            event.setJoinMessage(DARK_GRAY + "[" + DARK_GREEN + "+" + DARK_GRAY + "] "
                     + GREEN + player.getName() + GRAY + " has joined the game.");
         }
 
-        if (getConfig().isScoreboardEnabled()) {
-            if (userModel.isScoreboardEnabled()) {
-                getScoreboardManager().startScoreboards(player);
-            }
-        }
+        String[] motd = new String[]{
+                CorePlugin.getMessages().getMessage(CHAT_HEADER),
+                GRAY + "Welcome to " + DARK_GRAY + "" + ITALIC + "Nighthawk "
+                        + GRAY + "" + ITALIC + "Empires" + GRAY + ", " + GREEN + player.getName() + GRAY + ".",
+                GRAY + "Use " + DARK_AQUA + "/help " + GRAY + "or visit the help section at " +
+                        DARK_AQUA + "/warp help" + GRAY + " for help.",
+                GRAY + "Toggle scoreboards using " + DARK_AQUA + "/scoreboard",
+                GRAY + "There are currently " + GOLD + Bukkit.getOnlinePlayers().size() + DARK_GRAY
+                        + "/" + GOLD + Bukkit.getMaxPlayers() + GRAY + " player(s) online.",
+                CorePlugin.getMessages().getMessage(CHAT_FOOTER),
+        };
+        Bukkit.getScheduler().scheduleSyncDelayedTask(CorePlugin.getPlugin(), () -> {
+            player.sendMessage(motd);
+        }, 5L);
 
         String header = getMessages().getMessage(CHAT_HEADER) + "\n"
                 + DARK_GRAY + "Players Online" + GRAY + ": " + GOLD + Bukkit.getOnlinePlayers().size() + DARK_GRAY + "/" + GOLD + Bukkit.getServer().getMaxPlayers();
@@ -94,37 +96,38 @@ public class PlayerListener implements Listener {
 
 
         if (player.hasPermission("ne.staff")) {
-            event.setQuitMessage(ChatColor.DARK_GRAY + "[" + ChatColor.DARK_RED + "-" + ChatColor.DARK_GRAY + "] "
-                    + AQUA + "" + BOLD + "" + ITALIC + "Staff " + ChatColor.RED + player.getName() + ChatColor.GRAY + " has left the game.");
+            event.setQuitMessage(DARK_GRAY + "[" + DARK_RED + "-" + DARK_GRAY + "] "
+                    + AQUA + "" + BOLD + "" + ITALIC + "Staff " + RED + player.getName() + GRAY + " has left the game.");
         } else {
-            event.setQuitMessage(ChatColor.DARK_GRAY + "[" + ChatColor.DARK_RED + "-" + ChatColor.DARK_GRAY + "] "
-                    + ChatColor.RED + player.getName() + ChatColor.GRAY + " has left the game.");
+            event.setQuitMessage(DARK_GRAY + "[" + DARK_RED + "-" + DARK_GRAY + "] "
+                    + RED + player.getName() + GRAY + " has left the game.");
         }
 
-        //getScoreboardManager().stopScoreboards(player);
-        //event.setQuitMessage(getMessages().getMessage(QUIT_MESSAGE).replaceAll("%PLAYER%", player.getName()));
         String header = getMessages().getMessage(CHAT_HEADER) + "\n"
                 + DARK_GRAY + "Players Online" + GRAY + ": " + GOLD + (Bukkit.getOnlinePlayers().size() - 1) + DARK_GRAY + "/" + GOLD + Bukkit.getServer().getMaxPlayers();
-        String footer = DARK_GRAY + "Donate" + GRAY + ": " + AQUA + "store.nighthawkempires.net \n" + getMessages().getMessage(CHAT_FOOTER);
 
         for (Player online : Bukkit.getOnlinePlayers()) {
             online.setPlayerListHeader(header);
-            online.setPlayerListFooter(footer);
         }
     }
 
     @EventHandler
     public void onJoin(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
-        UserModel userModel = getUserRegistry().getUser(uuid);
 
-        if (userModel.isBanned()) {
-            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-            event.setKickMessage(userModel.getActiveBan().getBanInfo());
-        } else if (CorePlugin.getIpBanRegistry().isBanned(event.getAddress().getHostAddress())) {
-            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
-            event.setKickMessage(CorePlugin.getIpBanRegistry().getBan(event.getAddress().getHostAddress()).getBanInfo());
-            event.setKickMessage(userModel.getActiveBan().getBanInfo());
+        if (event.getLoginResult() == AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+            if (Bukkit.getOfflinePlayer(uuid).getName() != null) {
+                UserModel userModel = getUserRegistry().getUser(uuid);
+
+                if (userModel.isBanned()) {
+                    event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+                    event.setKickMessage(userModel.getActiveBan().getBanInfo());
+                } else if (CorePlugin.getIpBanRegistry().isBanned(event.getAddress().getHostAddress())) {
+                    event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_BANNED);
+                    event.setKickMessage(CorePlugin.getIpBanRegistry().getBan(event.getAddress().getHostAddress()).getBanInfo());
+                    event.setKickMessage(userModel.getActiveBan().getBanInfo());
+                }
+            }
         }
     }
 

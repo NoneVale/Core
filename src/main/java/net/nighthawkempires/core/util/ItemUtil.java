@@ -1,16 +1,24 @@
 package net.nighthawkempires.core.util;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Axolotl;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.AxolotlBucketMeta;
+import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.bukkit.Material.*;
@@ -34,6 +42,15 @@ public class ItemUtil {
             FURNACE_MINECART, HOPPER_MINECART, COMPOSTER, BREWING_STAND, CAULDRON, TRAPPED_CHEST, TRIPWIRE_HOOK,
             TRIPWIRE
     );
+
+    public static boolean hasEmptyHand(Player player) {
+        ItemStack itemStack = player.getInventory().getItemInMainHand();
+        return itemStack.getType().isAir();
+    }
+
+    public static boolean isEmpty(ItemStack itemStack) {
+        return itemStack == null || itemStack.getType().isAir();
+    }
 
     public static ItemStack getItemStack(Material material, String name) {
         ItemStack itemStack = new ItemStack(material);
@@ -115,5 +132,48 @@ public class ItemUtil {
         return interactable.contains(material);
     }
 
+    public static Map<String, Object> serialize(ItemStack itemStack) {
+        Map<String, Object> map = Maps.newLinkedHashMap();
+        itemStack.serialize();
+        map.put("type", itemStack.getType().name());
+        if (itemStack.getAmount() > 1) {
+            map.put("amount", itemStack.getAmount());
+        }
 
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (!Bukkit.getItemFactory().equals(itemMeta, null)) {
+            Map<String, Object> meta = Maps.newLinkedHashMap();
+            if (itemMeta.hasDisplayName()) {
+                meta.put("display_name", itemMeta.getDisplayName());
+            }
+
+            if (itemMeta.hasEnchants()) {
+                Map<String, Object> enchants = Maps.newLinkedHashMap();
+                for (Enchantment enchantment : itemMeta.getEnchants().keySet()) {
+                    enchants.put(enchantment.getKey().toString(), itemMeta.getEnchantLevel(enchantment));
+                }
+
+                meta.put("enchantments", enchants);
+            }
+
+            if (itemMeta.hasLore()) {
+                meta.put("lore", itemMeta.getLore());
+            }
+
+            if (itemMeta instanceof AxolotlBucketMeta axolotlBucketMeta) {
+                if (axolotlBucketMeta.hasVariant()) {
+                    meta.put("axolotl_variant", axolotlBucketMeta.getVariant().name());
+                }
+            } else if (itemMeta instanceof BannerMeta bannerMeta) {
+
+                if (bannerMeta.numberOfPatterns() > 0) {
+
+                }
+            }
+
+            map.put("meta", meta);
+        }
+
+        return map;
+    }
 }

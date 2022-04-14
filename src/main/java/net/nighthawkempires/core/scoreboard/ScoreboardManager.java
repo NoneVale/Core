@@ -3,6 +3,7 @@ package net.nighthawkempires.core.scoreboard;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.nighthawkempires.core.CorePlugin;
+import net.nighthawkempires.core.user.UserModel;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
@@ -13,11 +14,13 @@ import java.util.*;
 public class ScoreboardManager {
 
     private List<NEScoreboard> scoreboardList;
-    private HashMap<UUID, HashMap<String, Object>> playerScoreboardMap;
+    //private HashMap<UUID, HashMap<String, Object>> playerScoreboardMap;
+    private int currentBoard;
 
     public ScoreboardManager() {
         this.scoreboardList = Lists.newArrayList();
-        this.playerScoreboardMap = Maps.newHashMap();
+        //this.playerScoreboardMap = Maps.newHashMap();
+        this.currentBoard = 0;
     }
 
     public ScoreboardManager addScoreboard(NEScoreboard scoreboard) {
@@ -38,58 +41,33 @@ public class ScoreboardManager {
     }
 
     @SuppressWarnings("unchecked")
-    public void startScoreboards(Player player) {
-        this.playerScoreboardMap.put(player.getUniqueId(), Maps.newHashMap());
-        getPlayerMap(player).put("scoreboards", Lists.newArrayList(scoreboardList));
-        getPlayerMap(player).put("current-board", 0);
+    public void startScoreboards() {
         int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(CorePlugin.getPlugin(), () -> {
-            if (!player.isOnline())return;
+            if (Bukkit.getOnlinePlayers().size() == 0) return;
 
-            int currentBoard = (int) getPlayerMap(player).get("current-board");
-            if (currentBoard == ((List<NEScoreboard>) getPlayerMap(player).get("scoreboards")).size()) {
+            if (currentBoard == scoreboardList.size()) {
                 currentBoard = 0;
             }
 
-            if ((((List<NEScoreboard>) getPlayerMap(player).get("scoreboards"))).get(currentBoard) == null) {
+            if (scoreboardList.get(currentBoard) == null) {
                 if (currentBoard == 0) return;
                 currentBoard = 0;
             }
 
-            /*int previousBoard = currentBoard - 1;
-            if (previousBoard == -1) {
-                previousBoard = ((List<NEScoreboard>) getPlayerMap(player).get("scoreboards")).size() - 1;
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                UserModel userModel = CorePlugin.getUserRegistry().getUser(player.getUniqueId());
+                if (userModel.isScoreboardEnabled()) {
+                    player.setScoreboard(scoreboardList.get(currentBoard).getFor(player));
+                }
             }
-
-            // Might not be needed due to canceling the event in the "Scoreboard" class
-            try {
-                Bukkit.getScheduler().cancelTask(((List<NEScoreboard>) getPlayerMap(player).get("scoreboards")).get(previousBoard).getTaskId());
-            } catch (Exception ignored) {}*/
-
-            player.setScoreboard(((List<NEScoreboard>) getPlayerMap(player).get("scoreboards")).get(currentBoard).getFor(player));
-            getPlayerMap(player).put("current-board", currentBoard + 1);
+            currentBoard++;
         }, 0 , 300);
-        getPlayerMap(player).put("taskId", taskId);
     }
 
     @SuppressWarnings("unchecked")
     public void stopScoreboards(Player player) {
         try {
             player.setScoreboard(Objects.requireNonNull(Bukkit.getScoreboardManager()).getMainScoreboard());
-
-            int currentBoard = (int) getPlayerMap(player).get("current-board");
-
-            Bukkit.getScheduler().cancelTask(((List<NEScoreboard>) getPlayerMap(player).get("scoreboards")).get(currentBoard).getTaskId());
-            Bukkit.getScheduler().cancelTask((int) getPlayerMap(player).get("taskId"));
-
-            this.playerScoreboardMap.remove(player.getUniqueId());
         } catch (Exception ignored) {}
-    }
-
-    private HashMap<String, Object> getPlayerMap(Player player) {
-        return playerScoreboardMap.get(player.getUniqueId());
-    }
-
-    public HashMap<UUID, HashMap<String, Object>> getPlayerScoreboardMap() {
-        return this.playerScoreboardMap;
     }
 }

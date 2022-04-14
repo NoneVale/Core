@@ -72,7 +72,7 @@ public class InfoScoreboard extends NEScoreboard {
             top.setSuffix(ChatColor.BLUE + player.getName());
             middle.setSuffix(ChatColor.GREEN + (getConfig().isEconomyBased() ? StringUtil.formatBalance(userModel.getServerBalance(getConfig().getServerType())) + "" : userModel.getPlayedServerList().size() + ""));
             bottom.setSuffix(ChatColor.GOLD + "" + userModel.getTokens());
-        }, 0 , 5);
+        }, 0 , 10);
         Bukkit.getScheduler().scheduleSyncDelayedTask(CorePlugin.getPlugin(), () -> {
             Bukkit.getScheduler().cancelTask(getTaskId());
         }, 295);

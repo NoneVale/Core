@@ -3,7 +3,7 @@ version: 1.0.0-SNAPSHOT
 main: net.nighthawkempires.core.CorePlugin
 description: Nighthawk Empires' Core Plugin.
 author: NoneVale_
-api-version: 1.17
+api-version: 1.18
 libraries:
   - org.mongodb:bson:3.8.2
   - org.mongodb:mongodb-driver:3.8.2

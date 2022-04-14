@@ -25,7 +25,7 @@ public class FJsonSection extends HashMap<String, Object> implements DataSection
 
     public boolean save(File dataFile) {
         try {
-            Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
+            Gson gson = new GsonBuilder().enableComplexMapKeySerialization().disableHtmlEscaping().create();
             String json = gson.toJson(this, Map.class);
             PrintWriter writer = new PrintWriter(dataFile);
             writer.print(json);
@@ -39,7 +39,7 @@ public class FJsonSection extends HashMap<String, Object> implements DataSection
 
     public boolean savePretty(File dataFile) {
         try {
-            Gson gson = new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization().create();
+            Gson gson = new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization().disableHtmlEscaping().create();
             String json = gson.toJson(this, Map.class);
             PrintWriter writer = new PrintWriter(dataFile);
             writer.print(json);

@@ -31,8 +31,9 @@ public class PlayerLocationModel implements Model {
         this.homes = Maps.newHashMap();
         for (Map<String, Object> map : data.getMapList("homes")) {
             SavedLocation savedLocation = new SavedLocation(map);
-
-            homes.put(savedLocation.getName(), savedLocation);
+            if (savedLocation.getWorld() != null) {
+                homes.put(savedLocation.getName(), savedLocation);
+            }
         }
     }
 

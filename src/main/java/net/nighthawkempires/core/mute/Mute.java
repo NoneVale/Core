@@ -120,7 +120,7 @@ public class Mute {
             return getMessages().getChatMessage(GRAY + "You were muted by " + GREEN + Bukkit.getOfflinePlayer(this.getMutedBy()).getName() +
                     GRAY + " for " + YELLOW + getMuteReason() + GRAY + ". \n")
                     + getMessages().getChatMessage(GRAY +
-                    "To request to be unmuted join our Discord and fill out your request accordingly https://discord.gg/YevukF5");
+                    "To request to be unmuted join our Discord and fill out your request accordingly https://discord.gg/ZR3qZfHA");
         }
         return null;
     }

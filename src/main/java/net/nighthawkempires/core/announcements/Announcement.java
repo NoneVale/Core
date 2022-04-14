@@ -15,7 +15,7 @@ public class Announcement {
     {
         String str[] = new String[arr.size()];
         for (int j = 0; j < arr.size(); j++) {
-            str[j] = StringUtil.centeredMessage(ChatColor.translateAlternateColorCodes('&', arr.get(j)));
+            str[j] = ChatColor.GRAY + StringUtil.centeredMessage(ChatColor.translateAlternateColorCodes('&', arr.get(j)));
         }
         return str;
     }
